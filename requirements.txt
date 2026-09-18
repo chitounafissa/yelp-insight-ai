@@ -1,0 +1,23 @@
+# --- Base de données ---
+sqlalchemy==2.0.36
+psycopg2-binary==2.9.10
+
+# --- Traitement de données (ETL) ---
+pandas==2.2.3
+
+# --- RAG : embeddings + index vectoriel ---
+sentence-transformers==3.3.1
+chromadb==0.5.23
+
+# --- LLM (génération de réponses) ---
+anthropic==0.40.0
+
+# --- API ---
+fastapi==0.115.6
+uvicorn[standard]==0.32.1
+
+# --- Config / secrets ---
+python-dotenv==1.0.1
+
+# --- Tests ---
+pytest==8.3.4

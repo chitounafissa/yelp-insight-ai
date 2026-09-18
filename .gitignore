@@ -1,0 +1,19 @@
+# Environnement virtuel Python
+.venv/
+
+# Données brutes (trop volumineuses / pas à versionner)
+data/raw/
+
+# Secrets
+.env
+
+# Cache Python
+__pycache__/
+*.pyc
+
+# Base vectorielle ChromaDB (générée localement)
+chroma_db/
+
+# Fichiers IDE / OS
+.vscode/
+.DS_Store
