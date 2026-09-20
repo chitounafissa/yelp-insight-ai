@@ -9,8 +9,8 @@ pandas==2.2.3
 sentence-transformers==3.3.1
 chromadb==0.5.23
 
-# --- LLM (génération de réponses) ---
-anthropic==0.40.0
+# --- LLM (génération de réponses, via Ollama en local) ---
+ollama==0.6.2
 
 # --- API ---
 fastapi==0.115.6
