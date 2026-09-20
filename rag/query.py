@@ -1,5 +1,6 @@
 import os
 import sys
+from functools import lru_cache
 from pathlib import Path
 
 import chromadb
@@ -22,6 +23,15 @@ SYSTEM_PROMPT = (
 )
 
 
+@lru_cache(maxsize=1)
+def get_resources():
+    """Charge le modèle d'embeddings et se connecte à ChromaDB une seule fois par processus."""
+    embedder = SentenceTransformer(EMBEDDING_MODEL)
+    client = chromadb.PersistentClient(path=str(CHROMA_PATH))
+    collection = client.get_collection(COLLECTION_NAME)
+    return embedder, collection
+
+
 def retrieve(question: str, embedder: SentenceTransformer, collection, top_k: int = TOP_K):
     query_embedding = embedder.encode([question]).tolist()
     results = collection.query(query_embeddings=query_embedding, n_results=top_k)
@@ -37,9 +47,7 @@ def build_context(retrieved) -> str:
 
 
 def ask(question: str) -> str:
-    embedder = SentenceTransformer(EMBEDDING_MODEL)
-    client = chromadb.PersistentClient(path=str(CHROMA_PATH))
-    collection = client.get_collection(COLLECTION_NAME)
+    embedder, collection = get_resources()
 
     retrieved = retrieve(question, embedder, collection)
     context = build_context(retrieved)
