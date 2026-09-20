@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: yelp_user
+          POSTGRES_PASSWORD: yelp_test_password
+          POSTGRES_DB: yelp_insight
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U yelp_user"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://yelp_user:yelp_test_password@localhost:5432/yelp_insight
+      PGPASSWORD: yelp_test_password
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Create schema
+        run: psql -h localhost -U yelp_user -d yelp_insight -f db/schema.sql
+
+      - name: Load sample fixture data
+        run: psql -h localhost -U yelp_user -d yelp_insight -f tests/fixtures/sample_data.sql
+
+      - name: Run data quality tests
+        run: pytest tests/test_quality.py -v
